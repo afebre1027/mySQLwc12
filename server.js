@@ -22,9 +22,32 @@ const db = mysql.createConnection(
   console.log("Connected to the COMPANY database.")
 );
 
+//  get all departments
+app.get("/api/departments", (req, res) => {
+    const sql = `SELECT departments.*, roles.title
+    FROM roles
+    LEFT JOIN departments
+    ON roles.department_id = departments.id`;
+  
+    db.query(sql, (err, rows) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json({
+        message: "success",
+        data: rows,
+      });
+    });
+  });
+
 // get a single department
 app.get("/api/department/:id", (req, res) => {
-  const sql = `SELECT * FROM departments WHERE id = ?`;
+  const sql = `SELECT * FROM departments.*, roles.title
+        AS role_title
+        LEFT JOIN departments
+        ON roles.department_id = departments.id;
+        WHERE departments.id = ?`;
   const params = [req.params.id];
 
   db.query(sql, params, (err, row) => {
@@ -35,22 +58,6 @@ app.get("/api/department/:id", (req, res) => {
     res.json({
       message: "success",
       data: row,
-    });
-  });
-});
-
-//  get all departments
-app.get("/api/departments", (req, res) => {
-  const sql = `SELECT * FROM departments`;
-
-  db.query(sql, (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({
-      message: "success",
-      data: rows,
     });
   });
 });
