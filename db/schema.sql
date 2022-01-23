@@ -12,13 +12,18 @@ CREATE TABLE roles (
     title VARCHAR(30) NOT NULL,
     salary VARCHAR(30) NOT NULL,
     department_id INTEGER,
-    CONSTRAINT fk_departments FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL
+    CONSTRAINT fk_departments FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE
+    SET
+        NULL
 );
 
--- CREATE TABLE employees (
---     id INTEGER AUTO_INCREMENT PRIMARY KEY,
---     first_name VARCHAR(30) NOT NULL,
---     last_name VARCHAR(30) NOT NULL,
---     role_id INTEGER NOT NULL,
---     manager_id INTEGER NOT NULL
--- );
+CREATE TABLE employees (
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    role_id INTEGER,
+    manager_id BOOLEAN,
+    CONSTRAINT fk_roles FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE
+    SET
+        NULL
+);

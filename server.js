@@ -24,22 +24,22 @@ const db = mysql.createConnection(
 
 //  get all departments
 app.get("/api/departments", (req, res) => {
-    const sql = `SELECT departments.*, roles.title
+  const sql = `SELECT departments.*, roles.title
     FROM roles
     LEFT JOIN departments
     ON roles.department_id = departments.id`;
-  
-    db.query(sql, (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      res.json({
-        message: "success",
-        data: rows,
-      });
+
+  db.query(sql, (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: "success",
+      data: rows,
     });
   });
+});
 
 // get a single department
 app.get("/api/department/:id", (req, res) => {
@@ -104,6 +104,61 @@ app.post("/api/department", ({ body }, res) => {
       message: "success",
       data: body,
     });
+  });
+});
+
+// get all roles
+app.get("/api/roles", (req, res) => {
+  const sql = `SELECT * FROM roles`;
+
+  db.query(sql, (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: "success",
+      data: rows,
+    });
+  });
+});
+
+// get single role
+app.get("/api/role/:id", (req, res) => {
+  const sql = `SELECT * FROM roles WHERE id = ?`;
+  const params = [req.params.id];
+
+  db.query(sql, params, (err, row) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: "success",
+      data: row,
+    });
+  });
+});
+
+app.delete("/api/role/:id", (req, res) => {
+  const sql = `DELETE FROM roles WHERE id = ?`;
+  const params = [req.params.id];
+
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      // check if anything was deleted
+    } else if (!result.affectedRows) {
+      res.status(200).json({
+        message: "party not found",
+      });
+    } else {
+      res.json({
+        message: "deleted",
+        changes: result.affectedRows,
+        id: req.params.id,
+      });
+    }
   });
 });
 

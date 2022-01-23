@@ -18,14 +18,14 @@ VALUES
     ('Legal Team Lead', '250000', 3),
     ('Lawyer', '190000', 3);
 
--- INSERT INTO
---     employees (first_name, last_name, role_id, manager_id)
--- VALUES
---     ('John', 'Doe'),
---     ('Mike', 'Chan'),
---     ('Ashley', 'Rodriguez'),
---     ('Kevin', 'Tupik'),
---     ('Kunal', 'Singh'),
---     ('Malia', 'Brown'),
---     ('Sarah', 'Lourd'),
---     ('Tom', 'Allen');
+INSERT INTO
+    employees (first_name, last_name, role_id, manager_id)
+VALUES
+    ('John', 'Doe', 0),
+    ('Mike', 'Chan', 1),
+    ('Ashley', 'Rodriguez', 1),
+    ('Kevin', 'Tupik', , 0),
+    ('Kunal', 'Singh', , 0),
+    ('Malia', 'Brown', , 1),
+    ('Sarah', 'Lourd' , 1),
+    ('Tom', 'Allen' , 0);
