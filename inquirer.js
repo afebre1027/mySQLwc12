@@ -1,6 +1,10 @@
+const db = require("./db/connection");
+const inquirer = require("inquirer");
+const cTable = require("console.table");
+
 db.connect((err) => {
   if (err) throw err;
-  console.log("inquirer connected");
+  console.log("================== employee tracker ===============");
   promptUser();
 });
 
@@ -12,13 +16,12 @@ const promptUser = () => {
         name: "menu",
         message: "Please select a option",
         choices: [
-          "Departments",
+          "Department",
           "Roles",
           "Employees",
           "Add Department",
           "Add Role",
           "Add Employee",
-          "Change Employee Role",
           "Finished",
         ],
       },
@@ -34,17 +37,14 @@ const promptUser = () => {
         case "Employees":
           promptEmployees();
           break;
-        case "add Department":
+        case "Add Department":
           promptAddDepartment();
           break;
-        case "add Role":
+        case "Add Role":
           promptAddRole();
           break;
-        case "add Employee":
+        case "Add Employee":
           promptAddEmployee();
-          break;
-        case "Change Employee Role":
-          promptChangeRole();
           break;
         default:
           "Finished";
@@ -52,18 +52,25 @@ const promptUser = () => {
       }
     });
 };
-// promptUser().then((answers) => console.log(answers));
 
 // display departments
 promptDepartments = () => {
   db.query(`SELECT * FROM departments`, (err, rows) => {
     if (err) throw err;
+    console.table(rows);
+
+    promptUser();
   });
 };
 
 // display Roles
 promptRoles = () => {
-  const sql = `SELECT * FROM roles`;
+  const sql = `SELECT roles.title, roles.salary, departments.department_name
+                AS department
+                FROM roles
+                LEFT JOIN departments
+                ON roles.department_id = departments.id`;
+
   db.query(sql, (err, result) => {
     if (err) throw err;
 
@@ -76,10 +83,11 @@ promptRoles = () => {
 // display Employee
 promptEmployees = () => {
   const sql = `SELECT * FROM employees`;
-  db.query(sql, (err, rows) => {
+
+  db.query(sql, (err, result) => {
     if (err) throw err;
 
-    console.table(rows);
+    console.table(result);
 
     promptUser();
   });
@@ -90,95 +98,105 @@ promptAddDepartment = () => {
   inquirer
     .prompt({
       type: "input",
-      name: "department",
+      name: "department_name",
       message: "What department would you like to add?",
     })
     .then((answers) => {
       db.query(
         `INSERT INTO departments (department_name)
-                VALUES (?)`,
-        {
-          name: answers.department,
-        }
-      ).then(promptUser);
-      console.log("completed new department");
+                VALUES ('${answers.department_name}')`,
 
-      promptUser();
+        (err) => {
+          if (err) throw err;
+          console.log("department added");
+
+          promptUser();
+        }
+      );
     });
 };
 
 // add role
 promptAddRole = () => {
   inquirer
-    .prompt(
+    .prompt([
       {
         type: "input",
         name: "title",
-        message: "What Role will be added?",
+        message: "What Role would you like to add?",
       },
       {
         type: "input",
         name: "salary",
-        message: "Annual Salary Amount?",
+        message: "What is the salary?",
+        validate: (salary) => {
+          if (salary) {
+            return true;
+          } else {
+            console.log("input $");
+            return false;
+          }
+        },
       },
-      {
-        type: "input",
-        name: "departmentId",
-        message: "What department will this role go to?",
-      }
-    )
+    ])
     .then((answers) => {
       db.query(
-        `INSERT INTO roles (title, salary, department_id) 
-                VALUES (?, ?, ?)`,
-        {
-          title: answers.title,
-          salary: answers.salary,
-          department_id: answers.department_id,
+        `INSERT INTO roles (title, salary)
+                VALUES ('${answers.title}', '${answers.salary}')`,
+        (err) => {
+          if (err) throw err;
+          console.log("role added");
+          promptUser();
         }
       );
-      console.log("completed new role");
-
-      promptUser();
     });
 };
 
-// add employee
 promptAddEmployee = () => {
   inquirer
-    .prompt(
+    .prompt([
       {
         type: "input",
-        name: "employeeFirst",
-        message: "New employees First Name?",
+        name: "first_name",
+        message: "What is your first name?",
       },
       {
         type: "input",
-        name: "employeeLast",
-        message: "New employees Last Name?",
+        name: "last_name",
+        message: "What is your last name?",
       },
       {
-        type: "input",
-        name: "roleId",
-        message: "New employees role ID?",
-      }
-    )
+        type: "list",
+        name: "role_name",
+        message: "what is your role?",
+        choices: [
+          "Sales Lead",
+          "Salesperson",
+          "Lead Engineer",
+          "Software Engineer",
+          "Account Manager",
+          "Accountant",
+          "Legal Team Lead",
+          "Lawyer",
+        ],
+      },
+    ])
     .then((answers) => {
       db.query(
         `INSERT INTO employees (first_name, last_name, role_id)
-                VALUES (?, ?, ?)`,
-        {
-          first_name: answers.first_name,
-          last_name: answers.last_name,
-          roles: answers.roles,
+                VALUES ('${answers.first_name}', '${answers.last_name}', '${answers.role_name}')`,
+
+        (err) => {
+          if (err) throw err;
+          console.log("employee added");
+
+          promptUser();
         }
       );
-      console.log("New employee completed");
-
-      promptUser();
     });
 };
-// finish running app
-promptFinished = () => {};
 
-promptUser();
+// finish running app
+promptFinished = () => {
+  console.log("done");
+};

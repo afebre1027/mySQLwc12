@@ -1,9 +1,11 @@
 const db = require("./db/connection");
 const express = require("express");
 const apiRoutes = require("./routes");
-const inquirer = require("inquirer");
+// const inquirer = require("inquirer");
 const cTable = require("console.table");
-console.table(["apples", "oranges", "bana"]);
+
+console.table(['table', 'apple', 'monkey']);
+
 const PORT = process.env.PORT || 3001;
 const app = express();
 

@@ -25,7 +25,8 @@ VALUES
     ('Mike', 'Chan', 3),
     ('Ashley', 'Rodriguez', 2),
     ('Kevin', 'Tupik', 1),
-    ('Kunal', 'Singh', 4),
-    ('Malia', 'Brown', 3),
-    ('Sarah', 'Lourd', 2),
-    ('Tom', 'Allen', 1);
+    ('Kunal', 'Singh', 5),
+    ('Malia', 'Brown', 6),
+    ('Sarah', 'Lourd', 7),
+    ('Tom', 'Allen', 8);
+
